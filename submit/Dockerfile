@@ -9,4 +9,4 @@ ENV PARAMS="/input /output"
 ADD run.sh /run.sh
 RUN chmod a+x /run.sh
 
-CMD ["/run.sh"]
+CMD ["/run.sh", "hadoop dfsadmin -safemode leave"]

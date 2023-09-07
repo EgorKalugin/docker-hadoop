@@ -16,9 +16,13 @@ build:
 
 wordcount:
 	docker build -t hadoop-wordcount ./submit
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -mkdir -p /input/
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -copyFromLocal -f /opt/hadoop-3.3.1/README.txt /input/
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-wordcount
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -cat /output/*
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /output
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /input
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -mkdir -p /input/
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -copyFromLocal -f /opt/hadoop-3.3.1/README.txt /input/
+	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-wordcount
+	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -cat /output/*
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /output
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /input
+
+clear:
+	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /output
+	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /input

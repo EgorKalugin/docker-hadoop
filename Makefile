@@ -26,3 +26,16 @@ wordcount:
 clear:
 	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /output
 	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /input
+
+
+wordcount_py_run_test:
+	echo "foo foo quux labs foo bar quux" | python ./wordcount_py/mapper.py | sort -k1,1 | python ./wordcount_py/reducer.py
+
+run_wordcount_py:
+	docker build -t hadoop-wordcount_py ./wordcount_py
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -mkdir -p /input/
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -copyFromLocal -f /opt/hadoop-3.3.1/README.txt /input/
+	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-wordcount_py
+	docker run --rm --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -cat /output/*
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /output
+	docker run --rm -d --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} wxwmatt/hadoop-base:$(current_branch) hdfs dfs -rm -r /input
